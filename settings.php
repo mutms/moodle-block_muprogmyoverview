@@ -1,123 +1,121 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of MuTMS suite of plugins for Moodle™ LMS.
 //
-// Moodle is free software: you can redistribute it and/or modify
+// This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Moodle is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+// phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
+// phpcs:disable moodle.Commenting.InlineComment.TypeHintingMatch
 
 /**
- * Settings for the myoverview block
+ * Settings for the muprogmyoverview block
  *
- * @package    block_myoverview
+ * @package    block_muprogmyoverview
  * @copyright  2019 Tom Dickman <tomdickman@catalyst-au.net>
+ * @copyright  2025 Petr Skoda
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
+/** @var stdClass $CFG */
+/** @var admin_settingpage $settings */
+/** @var admin_root $ADMIN */
+
 if ($ADMIN->fulltree) {
-    require_once($CFG->dirroot . '/blocks/myoverview/lib.php');
+    require_once($CFG->dirroot . '/blocks/muprogmyoverview/lib.php');
 
     // Presentation options heading.
-    $settings->add(new admin_setting_heading('block_myoverview/appearance',
-            get_string('appearance', 'admin'),
-            ''));
+    $settings->add(new admin_setting_heading(
+        'block_muprogmyoverview/appearance',
+        get_string('appearance', 'admin'),
+        ''
+    ));
 
-    // Display Course Categories on Dashboard course items (cards, lists, summary items).
+    // Display Program Categories on Dashboard program items (cards, lists, description items).
     $settings->add(new admin_setting_configcheckbox(
-            'block_myoverview/displaycategories',
-            get_string('displaycategories', 'block_myoverview'),
-            get_string('displaycategories_help', 'block_myoverview'),
-            1));
+        'block_muprogmyoverview/displaycategories',
+        get_string('displaycategories', 'block_muprogmyoverview'),
+        get_string('displaycategories_help', 'block_muprogmyoverview'),
+        0
+    )); // Program categories are less useful than course categories.
 
     // Enable / Disable available layouts.
-    $choices = array(BLOCK_MYOVERVIEW_VIEW_CARD => get_string('card', 'block_myoverview'),
-            BLOCK_MYOVERVIEW_VIEW_LIST => get_string('list', 'block_myoverview'),
-            BLOCK_MYOVERVIEW_VIEW_SUMMARY => get_string('summary', 'block_myoverview'));
+    $choices = [BLOCK_MUPROGMYOVERVIEW_VIEW_CARD => get_string('card', 'block_muprogmyoverview'),
+            BLOCK_MUPROGMYOVERVIEW_VIEW_LIST => get_string('list', 'block_muprogmyoverview'),
+            BLOCK_MUPROGMYOVERVIEW_VIEW_DESCRIPTION => get_string('description', 'block_muprogmyoverview')];
     $settings->add(new admin_setting_configmulticheckbox(
-            'block_myoverview/layouts',
-            get_string('layouts', 'block_myoverview'),
-            get_string('layouts_help', 'block_myoverview'),
-            $choices,
-            $choices));
-    unset ($choices);
+        'block_muprogmyoverview/layouts',
+        get_string('layouts', 'block_muprogmyoverview'),
+        get_string('layouts_help', 'block_muprogmyoverview'),
+        $choices,
+        $choices
+    ));
+    unset($choices);
 
-    // Enable / Disable course filter items.
-    $settings->add(new admin_setting_heading('block_myoverview/availablegroupings',
-            get_string('availablegroupings', 'block_myoverview'),
-            get_string('availablegroupings_desc', 'block_myoverview')));
-
-    $settings->add(new admin_setting_configcheckbox(
-            'block_myoverview/displaygroupingallincludinghidden',
-            get_string('allincludinghidden', 'block_myoverview'),
-            '',
-            0));
+    // Enable / Disable program filter items.
+    $settings->add(new admin_setting_heading(
+        'block_muprogmyoverview/availablegroupings',
+        get_string('availablegroupings', 'block_muprogmyoverview'),
+        get_string('availablegroupings_desc', 'block_muprogmyoverview')
+    ));
 
     $settings->add(new admin_setting_configcheckbox(
-            'block_myoverview/displaygroupingall',
-            get_string('all', 'block_myoverview'),
-            '',
-            1));
+        'block_muprogmyoverview/displaygroupingallincludinghidden',
+        get_string('allincludinghidden', 'block_muprogmyoverview'),
+        '',
+        0
+    ));
 
     $settings->add(new admin_setting_configcheckbox(
-            'block_myoverview/displaygroupinginprogress',
-            get_string('inprogress', 'block_myoverview'),
-            '',
-            1));
+        'block_muprogmyoverview/displaygroupingall',
+        get_string('all', 'block_muprogmyoverview'),
+        '',
+        1
+    ));
 
     $settings->add(new admin_setting_configcheckbox(
-            'block_myoverview/displaygroupingpast',
-            get_string('past', 'block_myoverview'),
-            '',
-            1));
+        'block_muprogmyoverview/displaygroupinginprogress',
+        get_string('inprogress', 'block_muprogmyoverview'),
+        '',
+        1
+    ));
 
     $settings->add(new admin_setting_configcheckbox(
-            'block_myoverview/displaygroupingfuture',
-            get_string('future', 'block_myoverview'),
-            '',
-            1));
+        'block_muprogmyoverview/displaygroupingpast',
+        get_string('past', 'block_muprogmyoverview'),
+        '',
+        1
+    ));
 
     $settings->add(new admin_setting_configcheckbox(
-            'block_myoverview/displaygroupingcustomfield',
-            get_string('customfield', 'block_myoverview'),
-            '',
-            0));
-
-    $choices = \core_customfield\api::get_fields_supporting_course_grouping();
-    if ($choices) {
-        $choices  = ['' => get_string('choosedots')] + $choices;
-        $settings->add(new admin_setting_configselect(
-                'block_myoverview/customfiltergrouping',
-                get_string('customfiltergrouping', 'block_myoverview'),
-                '',
-                '',
-                $choices));
-    } else {
-        $settings->add(new admin_setting_configempty(
-                'block_myoverview/customfiltergrouping',
-                get_string('customfiltergrouping', 'block_myoverview'),
-                get_string('customfiltergrouping_nofields', 'block_myoverview')));
-    }
-    $settings->hide_if('block_myoverview/customfiltergrouping', 'block_myoverview/displaygroupingcustomfield');
+        'block_muprogmyoverview/displaygroupingfuture',
+        get_string('future', 'block_muprogmyoverview'),
+        '',
+        1
+    ));
 
     $settings->add(new admin_setting_configcheckbox(
-            'block_myoverview/displaygroupingfavourites',
-            get_string('favourites', 'block_myoverview'),
-            '',
-            1));
+        'block_muprogmyoverview/displaygroupingfavourites',
+        get_string('favourites', 'block_muprogmyoverview'),
+        '',
+        1
+    ));
 
     $settings->add(new admin_setting_configcheckbox(
-            'block_myoverview/displaygroupinghidden',
-            get_string('hiddencourses', 'block_myoverview'),
-            '',
-            1));
+        'block_muprogmyoverview/displaygroupinghidden',
+        get_string('hiddenprograms', 'block_muprogmyoverview'),
+        '',
+        1
+    ));
 }

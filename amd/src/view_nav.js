@@ -1,17 +1,17 @@
-// This file is part of Moodle - http://moodle.org/
+// This file is part of MuTMS suite of plugins for Moodle™ LMS.
 //
-// Moodle is free software: you can redistribute it and/or modify
+// This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Moodle is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Manage the timeline view navigation for the overview block.
@@ -24,8 +24,8 @@ import $ from 'jquery';
 import * as CustomEvents from 'core/custom_interaction_events';
 import Notification from 'core/notification';
 import {setUserPreference} from 'core_user/repository';
-import * as View from 'block_myoverview/view';
-import SELECTORS from 'block_myoverview/selectors';
+import * as View from 'block_muprogmyoverview/view';
+import SELECTORS from 'block_muprogmyoverview/selectors';
 
 /**
  * Update the user preference for the block.
@@ -37,13 +37,11 @@ import SELECTORS from 'block_myoverview/selectors';
 const updatePreferences = (filter, value) => {
     let type = null;
     if (filter === 'display') {
-        type = 'block_myoverview_user_view_preference';
+        type = 'block_muprogmyoverview_user_view_preference';
     } else if (filter === 'sort') {
-        type = 'block_myoverview_user_sort_preference';
-    } else if (filter === 'customfieldvalue') {
-        type = 'block_myoverview_user_grouping_customfieldvalue_preference';
+        type = 'block_muprogmyoverview_user_sort_preference';
     } else {
-        type = 'block_myoverview_user_grouping_preference';
+        type = 'block_muprogmyoverview_user_grouping_preference';
     }
 
     return setUserPreference(type, value)
@@ -73,15 +71,9 @@ const registerSelector = root => {
 
             const filter = option.attr('data-filter');
             const pref = option.attr('data-pref');
-            const customfieldvalue = option.attr('data-customfieldvalue');
 
-            root.find(SELECTORS.courseView.region).attr('data-' + filter, option.attr('data-value'));
+            root.find(SELECTORS.programView.region).attr('data-' + filter, option.attr('data-value'));
             updatePreferences(filter, pref);
-
-            if (customfieldvalue) {
-                root.find(SELECTORS.courseView.region).attr('data-customfieldvalue', customfieldvalue);
-                updatePreferences('customfieldvalue', customfieldvalue);
-            }
 
             // Reset the views.
 
@@ -114,7 +106,7 @@ const registerSelector = root => {
             const filter = option.attr('data-display-option');
             const pref = option.attr('data-pref');
 
-            root.find(SELECTORS.courseView.region).attr('data-display', option.attr('data-value'));
+            root.find(SELECTORS.programView.region).attr('data-display', option.attr('data-value'));
             updatePreferences(filter, pref);
             View.reset(root);
             data.originalEvent.preventDefault();
@@ -126,7 +118,7 @@ const registerSelector = root => {
  * Initialise the timeline view navigation by adding event listeners to
  * the navigation elements.
  *
- * @param {object} root The root element for the myoverview block
+ * @param {object} root The root element for the muprogmyoverview block
  */
 export const init = root => {
     root = $(root);

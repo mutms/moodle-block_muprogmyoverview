@@ -1,44 +1,43 @@
-// This file is part of Moodle - http://moodle.org/
+// This file is part of MuTMS suite of plugins for Moodle™ LMS.
 //
-// Moodle is free software: you can redistribute it and/or modify
+// This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Moodle is distributed in the hope that it will be useful,
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Manage the courses view for the overview block.
+ * Manage the programs view for the overview block.
  *
  * @copyright  2018 Bas Brands <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 import $ from 'jquery';
-import * as Repository from 'block_myoverview/repository';
+import * as Repository from 'block_muprogmyoverview/repository';
 import * as PagedContentFactory from 'core/paged_content_factory';
 import * as PubSub from 'core/pubsub';
 import * as CustomEvents from 'core/custom_interaction_events';
 import * as Notification from 'core/notification';
 import * as Templates from 'core/templates';
-import * as CourseEvents from 'core_course/events';
-import SELECTORS from 'block_myoverview/selectors';
+import SELECTORS from 'block_muprogmyoverview/selectors';
 import * as PagedContentEvents from 'core/paged_content_events';
 import * as Aria from 'core/aria';
 import {debounce} from 'core/utils';
 import {setUserPreference} from 'core_user/repository';
 
 const TEMPLATES = {
-    COURSES_CARDS: 'block_myoverview/view-cards',
-    COURSES_LIST: 'block_myoverview/view-list',
-    COURSES_SUMMARY: 'block_myoverview/view-summary',
-    NOCOURSES: 'core_course/no-courses'
+    PROGRAMS_CARDS: 'block_muprogmyoverview/view-cards',
+    PROGRAMS_LIST: 'block_muprogmyoverview/view-list',
+    PROGRAMS_DESCRIPTION: 'block_muprogmyoverview/view-description',
+    NOPROGRAMS: 'block_muprogmyoverview/no-programs'
 };
 
 const GROUPINGS = {
@@ -51,11 +50,11 @@ const GROUPINGS = {
     GROUPING_HIDDEN: 'hidden'
 };
 
-const NUMCOURSES_PERPAGE = [12, 24, 48, 96, 0];
+const NUMPROGRAMS_PERPAGE = [12, 24, 48, 96, 0];
 
 let loadedPages = [];
 
-let courseOffset = 0;
+let programOffset = 0;
 
 let lastPage = 0;
 
@@ -64,30 +63,28 @@ let lastLimit = 0;
 let namespace = null;
 
 /**
- * Whether the summary display has been loaded.
+ * Whether the description display has been loaded.
  *
- * If true, this means that courses have been loaded with the summary text.
- * Otherwise, switching to the summary display mode will require course data to be fetched with the summary text.
+ * If true, this means that programs have been loaded with the description text.
+ * Otherwise, switching to the description display mode will require program data to be fetched with the description text.
  *
  * @type {boolean}
  */
-let summaryDisplayLoaded = false;
+let descriptionDisplayLoaded = false;
 
 /**
  * Get filter values from DOM.
  *
- * @param {object} root The root element for the courses view.
+ * @param {object} root The root element for the programs view.
  * @return {filters} Set filters.
  */
 const getFilterValues = root => {
-    const courseRegion = root.find(SELECTORS.courseView.region);
+    const programRegion = root.find(SELECTORS.programView.region);
     return {
-        display: courseRegion.attr('data-display'),
-        grouping: courseRegion.attr('data-grouping'),
-        sort: courseRegion.attr('data-sort'),
-        displaycategories: courseRegion.attr('data-displaycategories'),
-        customfieldname: courseRegion.attr('data-customfieldname'),
-        customfieldvalue: courseRegion.attr('data-customfieldvalue'),
+        display: programRegion.attr('data-display'),
+        grouping: programRegion.attr('data-grouping'),
+        sort: programRegion.attr('data-sort'),
+        displaycategories: programRegion.attr('data-displaycategories'),
     };
 };
 
@@ -96,77 +93,73 @@ const getFilterValues = root => {
 const DEFAULT_PAGED_CONTENT_CONFIG = {
     ignoreControlWhileLoading: true,
     controlPlacementBottom: true,
-    persistentLimitKey: 'block_myoverview_user_paging_preference'
+    persistentLimitKey: 'block_muprogmyoverview_user_paging_preference'
 };
 
 /**
- * Get enrolled courses from backend.
+ * Get allocated programs from backend.
  *
  * @param {object} filters The filters for this view.
- * @param {int} limit The number of courses to show.
- * @return {promise} Resolved with an array of courses.
+ * @param {int} limit The number of programs to show.
+ * @return {promise} Resolved with an array of programs.
  */
-const getMyCourses = (filters, limit) => {
+const getMyPrograms = (filters, limit) => {
     const params = {
-        offset: courseOffset,
+        offset: programOffset,
         limit: limit,
         classification: filters.grouping,
         sort: filters.sort,
-        customfieldname: filters.customfieldname,
-        customfieldvalue: filters.customfieldvalue,
     };
-    if (filters.display === 'summary') {
-        params.requiredfields = Repository.SUMMARY_REQUIRED_FIELDS;
-        summaryDisplayLoaded = true;
+    if (filters.display === 'description') {
+        params.showdescription = 1;
+        descriptionDisplayLoaded = true;
     } else {
-        params.requiredfields = Repository.CARDLIST_REQUIRED_FIELDS;
+        params.showdescription = 0;
     }
-    return Repository.getEnrolledCoursesByTimeline(params);
+    return Repository.getAllocatedProgramsByTimeline(params);
 };
 
 /**
- * Search for enrolled courses from backend.
+ * Search for allocated programs from backend.
  *
  * @param {object} filters The filters for this view.
- * @param {int} limit The number of courses to show.
- * @param {string} searchValue What does the user want to search within their courses.
- * @return {promise} Resolved with an array of courses.
+ * @param {int} limit The number of programs to show.
+ * @param {string} searchValue What does the user want to search within their programs.
+ * @return {promise} Resolved with an array of programs.
  */
-const getSearchMyCourses = (filters, limit, searchValue) => {
+const getSearchMyPrograms = (filters, limit, searchValue) => {
     const params = {
-        offset: courseOffset,
+        offset: programOffset,
         limit: limit,
-        classification: 'search',
+        classification: filters.grouping,
         sort: filters.sort,
-        customfieldname: filters.customfieldname,
-        customfieldvalue: filters.customfieldvalue,
         searchvalue: searchValue,
     };
-    if (filters.display === 'summary') {
-        params.requiredfields = Repository.SUMMARY_REQUIRED_FIELDS;
-        summaryDisplayLoaded = true;
+    if (filters.display === 'description') {
+        params.showdescription = 1;
+        descriptionDisplayLoaded = true;
     } else {
-        params.requiredfields = Repository.CARDLIST_REQUIRED_FIELDS;
-        summaryDisplayLoaded = false;
+        params.showdescription = 0;
+        descriptionDisplayLoaded = false;
     }
-    return Repository.getEnrolledCoursesByTimeline(params);
+    return Repository.getAllocatedProgramsByTimeline(params);
 };
 
 /**
  * Get the container element for the favourite icon.
  *
- * @param {Object} root The course overview container
- * @param {Number} courseId Course id number
+ * @param {Object} root The program overview container
+ * @param {Number} programId Program id number
  * @return {Object} The favourite icon container
  */
-const getFavouriteIconContainer = (root, courseId) => {
-    return root.find(SELECTORS.FAVOURITE_ICON + '[data-course-id="' + courseId + '"]');
+const getFavouriteIconContainer = (root, programId) => {
+    return root.find(SELECTORS.FAVOURITE_ICON + '[data-program-id="' + programId + '"]');
 };
 
 /**
  * Get the paged content container element.
  *
- * @param {Object} root The course overview container
+ * @param {Object} root The program overview container
  * @param {Number} index Rendered page index.
  * @return {Object} The rendered paged container.
  */
@@ -175,23 +168,23 @@ const getPagedContentContainer = (root, index) => {
 };
 
 /**
- * Get the course id from a favourite element.
+ * Get the program id from a favourite element.
  *
  * @param {Object} root The favourite icon container element.
- * @return {Number} Course id.
+ * @return {Number} Program id.
  */
-const getCourseId = root => {
-    return root.attr('data-course-id');
+const getProgramId = root => {
+    return root.attr('data-program-id');
 };
 
 /**
  * Hide the favourite icon.
  *
  * @param {Object} root The favourite icon container element.
- * @param {Number} courseId Course id number.
+ * @param {Number} programId Program id number.
  */
-const hideFavouriteIcon = (root, courseId) => {
-    const iconContainer = getFavouriteIconContainer(root, courseId);
+const hideFavouriteIcon = (root, programId) => {
+    const iconContainer = getFavouriteIconContainer(root, programId);
 
     const isFavouriteIcon = iconContainer.find(SELECTORS.ICON_IS_FAVOURITE);
     isFavouriteIcon.addClass('hidden');
@@ -205,11 +198,11 @@ const hideFavouriteIcon = (root, courseId) => {
 /**
  * Show the favourite icon.
  *
- * @param {Object} root The course overview container.
- * @param {Number} courseId Course id number.
+ * @param {Object} root The program overview container.
+ * @param {Number} programId Program id number.
  */
-const showFavouriteIcon = (root, courseId) => {
-    const iconContainer = getFavouriteIconContainer(root, courseId);
+const showFavouriteIcon = (root, programId) => {
+    const iconContainer = getFavouriteIconContainer(root, programId);
 
     const isFavouriteIcon = iconContainer.find(SELECTORS.ICON_IS_FAVOURITE);
     isFavouriteIcon.removeClass('hidden');
@@ -223,66 +216,64 @@ const showFavouriteIcon = (root, courseId) => {
 /**
  * Get the action menu item
  *
- * @param {Object} root The course overview container
- * @param {Number} courseId Course id.
+ * @param {Object} root The program overview container
+ * @param {Number} programId Program id.
  * @return {Object} The add to favourite menu item.
  */
-const getAddFavouriteMenuItem = (root, courseId) => {
-    return root.find('[data-action="add-favourite"][data-course-id="' + courseId + '"]');
+const getAddFavouriteMenuItem = (root, programId) => {
+    return root.find('[data-action="add-favourite"][data-program-id="' + programId + '"]');
 };
 
 /**
  * Get the action menu item
  *
- * @param {Object} root The course overview container
- * @param {Number} courseId Course id.
+ * @param {Object} root The program overview container
+ * @param {Number} programId Program id.
  * @return {Object} The remove from favourites menu item.
  */
-const getRemoveFavouriteMenuItem = (root, courseId) => {
-    return root.find('[data-action="remove-favourite"][data-course-id="' + courseId + '"]');
+const getRemoveFavouriteMenuItem = (root, programId) => {
+    return root.find('[data-action="remove-favourite"][data-program-id="' + programId + '"]');
 };
 
 /**
- * Add course to favourites
+ * Add program to favourites
  *
- * @param {Object} root The course overview container
- * @param {Number} courseId Course id number
+ * @param {Object} root The program overview container
+ * @param {Number} programId Program id number
  */
-const addToFavourites = (root, courseId) => {
-    const removeAction = getRemoveFavouriteMenuItem(root, courseId);
-    const addAction = getAddFavouriteMenuItem(root, courseId);
+const addToFavourites = (root, programId) => {
+    const removeAction = getRemoveFavouriteMenuItem(root, programId);
+    const addAction = getAddFavouriteMenuItem(root, programId);
 
-    setCourseFavouriteState(courseId, true).then(success => {
+    setProgramFavouriteState(programId, true).then(success => {
         if (success) {
-            PubSub.publish(CourseEvents.favourited, courseId);
             removeAction.removeClass('hidden');
             addAction.addClass('hidden');
-            showFavouriteIcon(root, courseId);
+            showFavouriteIcon(root, programId);
         } else {
-            Notification.alert('Starring course failed', 'Could not change favourite state');
+            Notification.alert('Starring program failed', 'Could not change favourite state');
         }
         return;
     }).catch(Notification.exception);
 };
 
 /**
- * Remove course from favourites
+ * Remove program from favourites
  *
- * @param {Object} root The course overview container
- * @param {Number} courseId Course id number
+ * @param {Object} root The program overview container
+ * @param {Number} programId Program id number
  */
-const removeFromFavourites = (root, courseId) => {
-    const removeAction = getRemoveFavouriteMenuItem(root, courseId);
-    const addAction = getAddFavouriteMenuItem(root, courseId);
+const removeFromFavourites = (root, programId) => {
+    const removeAction = getRemoveFavouriteMenuItem(root, programId);
+    const addAction = getAddFavouriteMenuItem(root, programId);
 
-    setCourseFavouriteState(courseId, false).then(success => {
+    setProgramFavouriteState(programId, false).then(success => {
         if (success) {
-            PubSub.publish(CourseEvents.unfavorited, courseId);
             removeAction.addClass('hidden');
             addAction.removeClass('hidden');
-            hideFavouriteIcon(root, courseId);
+            hideFavouriteIcon(root, programId);
         } else {
-            Notification.alert('Starring course failed', 'Could not change favourite state');
+            Notification.alert('Starring program failed', 'Could not change favourite state');
         }
         return;
     }).catch(Notification.exception);
@@ -291,42 +282,42 @@ const removeFromFavourites = (root, courseId) => {
 /**
  * Get the action menu item
  *
- * @param {Object} root The course overview container
- * @param {Number} courseId Course id.
- * @return {Object} The hide course menu item.
+ * @param {Object} root The program overview container
+ * @param {Number} programId Program id.
+ * @return {Object} The hide program menu item.
  */
-const getHideCourseMenuItem = (root, courseId) => {
-    return root.find('[data-action="hide-course"][data-course-id="' + courseId + '"]');
+const getHideProgramMenuItem = (root, programId) => {
+    return root.find('[data-action="hide-program"][data-program-id="' + programId + '"]');
 };
 
 /**
  * Get the action menu item
  *
- * @param {Object} root The course overview container
- * @param {Number} courseId Course id.
- * @return {Object} The show course menu item.
+ * @param {Object} root The program overview container
+ * @param {Number} programId Program id.
+ * @return {Object} The show program menu item.
  */
-const getShowCourseMenuItem = (root, courseId) => {
-    return root.find('[data-action="show-course"][data-course-id="' + courseId + '"]');
+const getShowProgramMenuItem = (root, programId) => {
+    return root.find('[data-action="show-program"][data-program-id="' + programId + '"]');
 };
 
 /**
- * Hide course
+ * Hide program
  *
- * @param {Object} root The course overview container
- * @param {Number} courseId Course id number
+ * @param {Object} root The program overview container
+ * @param {Number} programId Program id number
  */
-const hideCourse = (root, courseId) => {
-    const hideAction = getHideCourseMenuItem(root, courseId);
-    const showAction = getShowCourseMenuItem(root, courseId);
+const hideProgram = (root, programId) => {
+    const hideAction = getHideProgramMenuItem(root, programId);
+    const showAction = getShowProgramMenuItem(root, programId);
     const filters = getFilterValues(root);
 
-    setCourseHiddenState(courseId, true);
+    setProgramHiddenState(programId, true);
 
-    // Remove the course from this view as it is now hidden and thus not covered by this view anymore.
-    // Do only if we are not in "All (including archived)" view mode where really all courses are shown.
+    // Remove the program from this view as it is now hidden and thus not covered by this view anymore.
+    // Do only if we are not in "All (including archived)" view mode where really all programs are shown.
     if (filters.grouping !== GROUPINGS.GROUPING_ALLINCLUDINGHIDDEN) {
-        hideElement(root, courseId);
+        hideElement(root, programId);
     }
 
     hideAction.addClass('hidden');
@@ -334,22 +325,22 @@ const hideCourse = (root, courseId) => {
 };
 
 /**
- * Show course
+ * Show program
  *
- * @param {Object} root The course overview container
- * @param {Number} courseId Course id number
+ * @param {Object} root The program overview container
+ * @param {Number} programId Program id number
  */
-const showCourse = (root, courseId) => {
-    const hideAction = getHideCourseMenuItem(root, courseId);
-    const showAction = getShowCourseMenuItem(root, courseId);
+const showProgram = (root, programId) => {
+    const hideAction = getHideProgramMenuItem(root, programId);
+    const showAction = getShowProgramMenuItem(root, programId);
     const filters = getFilterValues(root);
 
-    setCourseHiddenState(courseId, null);
+    setProgramHiddenState(programId, null);
 
-    // Remove the course from this view as it is now shown again and thus not covered by this view anymore.
-    // Do only if we are not in "All (including archived)" view mode where really all courses are shown.
+    // Remove the program from this view as it is now shown again and thus not covered by this view anymore.
+    // Do only if we are not in "All (including archived)" view mode where really all programs are shown.
     if (filters.grouping !== GROUPINGS.GROUPING_ALLINCLUDINGHIDDEN) {
-        hideElement(root, courseId);
+        hideElement(root, programId);
     }
 
     hideAction.removeClass('hidden');
@@ -357,36 +348,36 @@ const showCourse = (root, courseId) => {
 };
 
 /**
- * Set the courses hidden status and push to repository
+ * Set the programs hidden status and push to repository
  *
- * @param {Number} courseId Course id to favourite.
+ * @param {Number} programId Program id to favourite.
  * @param {Boolean} status new hidden status.
  * @return {Promise} Repository promise.
  */
-const setCourseHiddenState = (courseId, status) => {
+const setProgramHiddenState = (programId, status) => {
 
     // If the given status is not hidden, the preference has to be deleted with a null value.
     if (status === false) {
         status = null;
     }
 
-    return setUserPreference(`block_myoverview_hidden_course_${courseId}`, status)
+    return setUserPreference(`block_muprogmyoverview_hidden_program_${programId}`, status)
         .catch(Notification.exception);
 };
 
 /**
  * Reset the loadedPages dataset to take into account the hidden element
  *
- * @param {Object} root The course overview container
- * @param {Number} id The course id number
+ * @param {Object} root The program overview container
+ * @param {Number} id The program id number
  */
 const hideElement = (root, id) => {
     const pagingBar = root.find('[data-region="paging-bar"]');
     const jumpto = parseInt(pagingBar.attr('data-active-page-number'));
 
     // Get a reduced dataset for the current page.
-    const courseList = loadedPages[jumpto];
-    let reducedCourse = courseList.courses.reduce((accumulator, current) => {
+    const programList = loadedPages[jumpto];
+    let reducedProgram = programList.programs.reduce((accumulator, current) => {
         if (+id !== +current.id) {
             accumulator.push(current);
         }
@@ -395,41 +386,41 @@ const hideElement = (root, id) => {
 
     // Get the next page's data if loaded and pop the first element from it.
     if (typeof (loadedPages[jumpto + 1]) !== 'undefined') {
-        const newElement = loadedPages[jumpto + 1].courses.slice(0, 1);
+        const newElement = loadedPages[jumpto + 1].programs.slice(0, 1);
 
         // Adjust the dataset for the reset of the pages that are loaded.
-        loadedPages.forEach((courseList, index) => {
+        loadedPages.forEach((programList, index) => {
             if (index > jumpto) {
                 let popElement = [];
                 if (typeof (loadedPages[index + 1]) !== 'undefined') {
-                    popElement = loadedPages[index + 1].courses.slice(0, 1);
+                    popElement = loadedPages[index + 1].programs.slice(0, 1);
                 }
-                loadedPages[index].courses = [...loadedPages[index].courses.slice(1), ...popElement];
+                loadedPages[index].programs = [...loadedPages[index].programs.slice(1), ...popElement];
             }
         });
 
-        reducedCourse = [...reducedCourse, ...newElement];
+        reducedProgram = [...reducedProgram, ...newElement];
     }
 
     // Check if the next page is the last page and if it still has data associated to it.
-    if (lastPage === jumpto + 1 && loadedPages[jumpto + 1].courses.length === 0) {
+    if (lastPage === jumpto + 1 && loadedPages[jumpto + 1].programs.length === 0) {
         const pagedContentContainer = root.find('[data-region="paged-content-container"]');
         PagedContentFactory.resetLastPageNumber($(pagedContentContainer).attr('id'), jumpto);
     }
 
-    loadedPages[jumpto].courses = reducedCourse;
+    loadedPages[jumpto].programs = reducedProgram;
 
-    // Reduce the course offset.
-    courseOffset--;
+    // Reduce the program offset.
+    programOffset--;
 
     // Render the paged content for the current.
     const pagedContentPage = getPagedContentContainer(root, jumpto);
-    renderCourses(root, loadedPages[jumpto]).then((html, js) => {
+    renderPrograms(root, loadedPages[jumpto]).then((html, js) => {
         return Templates.replaceNodeContents(pagedContentPage, html, js);
     }).catch(Notification.exception);
 
     // Delete subsequent pages in order to trigger the callback.
-    loadedPages.forEach((courseList, index) => {
+    loadedPages.forEach((programList, index) => {
         if (index > jumpto) {
             const page = getPagedContentContainer(root, index);
             page.remove();
@@ -438,27 +429,23 @@ const hideElement = (root, id) => {
 };
 
 /**
- * Set the courses favourite status and push to repository
+ * Set the programs favourite status and push to repository
  *
- * @param {Number} courseId Course id to favourite.
+ * @param {Number} programId Program id to favourite.
  * @param {boolean} status new favourite status.
  * @return {Promise} Repository promise.
  */
-const setCourseFavouriteState = (courseId, status) => {
+const setProgramFavouriteState = (programId, status) => {
 
-    return Repository.setFavouriteCourses({
-        courses: [
-            {
-                'id': courseId,
-                'favourite': status
-            }
-        ]
+    return Repository.setFavouriteProgram({
+        'id': programId,
+        'favourite': status
     }).then(result => {
         if (result.warnings.length === 0) {
-            loadedPages.forEach(courseList => {
-                courseList.courses.forEach((course, index) => {
-                    if (course.id == courseId) {
-                        courseList.courses[index].isfavourite = status;
+            loadedPages.forEach(programList => {
+                programList.programs.forEach((program, index) => {
+                    if (program.id == programId) {
+                        programList.programs[index].isfavourite = status;
                     }
                 });
             });
@@ -470,58 +457,56 @@ const setCourseFavouriteState = (courseId, status) => {
 };
 
 /**
- * Given there are no courses to render provide the rendered template.
+ * Given there are no programs to render provide the rendered template.
  *
- * @param {object} root The root element for the courses view.
+ * @param {object} root The root element for the programs view.
  * @return {promise} jQuery promise resolved after rendering is complete.
  */
-const noCoursesRender = root => {
-    const nocoursesimg = root.find(SELECTORS.courseView.region).attr('data-nocoursesimg');
-    const newcourseurl = root.find(SELECTORS.courseView.region).attr('data-newcourseurl');
-    return Templates.render(TEMPLATES.NOCOURSES, {
-        nocoursesimg: nocoursesimg,
-        newcourseurl: newcourseurl
+const noProgramsRender = root => {
+    const noprogramsimg = root.find(SELECTORS.programView.region).attr('data-noprogramsimg');
+    return Templates.render(TEMPLATES.NOPROGRAMS, {
+        noprogramsimg: noprogramsimg
     });
 };
 
 /**
- * Render the dashboard courses.
+ * Render the dashboard programs.
  *
- * @param {object} root The root element for the courses view.
- * @param {array} coursesData containing array of returned courses.
+ * @param {object} root The root element for the programs view.
+ * @param {array} programsData containing array of returned programs.
  * @return {promise} jQuery promise resolved after rendering is complete.
  */
-const renderCourses = (root, coursesData) => {
+const renderPrograms = (root, programsData) => {
 
     const filters = getFilterValues(root);
 
     let currentTemplate = '';
     if (filters.display === 'card') {
-        currentTemplate = TEMPLATES.COURSES_CARDS;
+        currentTemplate = TEMPLATES.PROGRAMS_CARDS;
     } else if (filters.display === 'list') {
-        currentTemplate = TEMPLATES.COURSES_LIST;
+        currentTemplate = TEMPLATES.PROGRAMS_LIST;
     } else {
-        currentTemplate = TEMPLATES.COURSES_SUMMARY;
+        currentTemplate = TEMPLATES.PROGRAMS_DESCRIPTION;
     }
 
-    if (!coursesData) {
-        return noCoursesRender(root);
+    if (!programsData) {
+        return noProgramsRender(root);
     } else {
         // Sometimes we get weird objects coming after a failed search, cast to ensure typing functions.
-        if (Array.isArray(coursesData.courses) === false) {
-            coursesData.courses = Object.values(coursesData.courses);
+        if (Array.isArray(programsData.programs) === false) {
+            programsData.programs = Object.values(programsData.programs);
         }
-        // Whether the course category should be displayed in the course item.
-        coursesData.courses = coursesData.courses.map(course => {
-            course.showcoursecategory = filters.displaycategories === 'on';
-            return course;
+        // Whether the program category should be displayed in the program item.
+        programsData.programs = programsData.programs.map(program => {
+            program.showprogramcategory = filters.displaycategories === 'on';
+            return program;
         });
-        if (coursesData.courses.length) {
+        if (programsData.programs.length) {
             return Templates.render(currentTemplate, {
-                courses: coursesData.courses,
+                programs: programsData.programs,
             });
         } else {
-            return noCoursesRender(root);
+            return noProgramsRender(root);
         }
     }
 };
@@ -529,19 +514,19 @@ const renderCourses = (root, coursesData) => {
 /**
  * Return the callback to be passed to the subscribe event
  *
- * @param {object} root The root element for the courses view
+ * @param {object} root The root element for the programs view
  * @return {function} Partially applied function that'll execute when passed a limit
  */
 const setLimit = root => {
     // @param {Number} limit The paged limit that is passed through the event.
-    return limit => root.find(SELECTORS.courseView.region).attr('data-paging', limit);
+    return limit => root.find(SELECTORS.programView.region).attr('data-paging', limit);
 };
 
 /**
  * Intialise the paged list and cards views on page load.
  * Returns an array of paged contents that we would like to handle here
  *
- * @param {object} root The root element for the courses view
+ * @param {object} root The root element for the programs view
  * @param {string} namespace The namespace for all the events attached
  */
 const registerPagedEventHandlers = (root, namespace) => {
@@ -552,12 +537,12 @@ const registerPagedEventHandlers = (root, namespace) => {
 /**
  * Figure out how many items are going to be allowed to be rendered in the block.
  *
- * @param  {Number} pagingLimit How many courses to display
- * @param  {Object} root The course overview container
- * @return {Number[]} How many courses will be rendered
+ * @param  {Number} pagingLimit How many programs to display
+ * @param  {Object} root The program overview container
+ * @return {Number[]} How many programs will be rendered
  */
 const itemsPerPageFunc = (pagingLimit, root) => {
-    let itemsPerPage = NUMCOURSES_PERPAGE.map(value => {
+    let itemsPerPage = NUMPROGRAMS_PERPAGE.map(value => {
         let active = false;
         if (value === pagingLimit) {
             active = true;
@@ -569,97 +554,97 @@ const itemsPerPageFunc = (pagingLimit, root) => {
         };
     });
 
-    // Filter out all pagination options which are too large for the amount of courses user is enrolled in.
-    const totalCourseCount = parseInt(root.find(SELECTORS.courseView.region).attr('data-totalcoursecount'), 10);
+    // Filter out all pagination options which are too large for the amount of programs user is allocated in.
+    const totalProgramCount = parseInt(root.find(SELECTORS.programView.region).attr('data-totalprogramcount'), 10);
     return itemsPerPage.filter(pagingOption => {
-        if (pagingOption.value === 0 && totalCourseCount > 100) {
-            // To minimise performance issues, do not show the "All" option if the user is enrolled in more than 100 courses.
+        if (pagingOption.value === 0 && totalProgramCount > 100) {
+            // To minimise performance issues, do not show the "All" option if the user is allocated in more than 100 programs.
             return false;
         }
-        return pagingOption.value < totalCourseCount;
+        return pagingOption.value < totalProgramCount;
     });
 };
 
 /**
  * Mutates and controls the loadedPages array and handles the bootstrapping.
  *
- * @param {Array|Object} coursesData Array of all of the courses to start building the page from
+ * @param {Array|Object} programsData Array of all of the programs to start building the page from
  * @param {Number} currentPage What page are we currently on?
  * @param {Object} pageData Any current page information
  * @param {Object} actions Paged content helper
  * @param {null|boolean} activeSearch Are we currently actively searching and building up search results?
  */
-const pageBuilder = (coursesData, currentPage, pageData, actions, activeSearch = null) => {
-    // If the courseData comes in an object then get the value otherwise it is a pure array.
-    let courses = coursesData.courses ? coursesData.courses : coursesData;
+const pageBuilder = (programsData, currentPage, pageData, actions, activeSearch = null) => {
+    // If the programData comes in an object then get the value otherwise it is a pure array.
+    let programs = programsData.programs ? programsData.programs : programsData;
     let nextPageStart = 0;
-    let pageCourses = [];
+    let pagePrograms = [];
 
     // If current page's data is loaded make sure we max it to page limit.
     if (typeof (loadedPages[currentPage]) !== 'undefined') {
-        pageCourses = loadedPages[currentPage].courses;
-        const currentPageLength = pageCourses.length;
+        pagePrograms = loadedPages[currentPage].programs;
+        const currentPageLength = pagePrograms.length;
         if (currentPageLength < pageData.limit) {
             nextPageStart = pageData.limit - currentPageLength;
-            pageCourses = {...loadedPages[currentPage].courses, ...courses.slice(0, nextPageStart)};
+            pagePrograms = {...loadedPages[currentPage].programs, ...programs.slice(0, nextPageStart)};
         }
     } else {
-        // When the page limit is zero, there is only one page of courses, no start for next page.
+        // When the page limit is zero, there is only one page of programs, no start for next page.
         nextPageStart = pageData.limit || false;
-        pageCourses = (pageData.limit > 0) ? courses.slice(0, pageData.limit) : courses;
+        pagePrograms = (pageData.limit > 0) ? programs.slice(0, pageData.limit) : programs;
     }
 
     // Finished setting up the current page.
     loadedPages[currentPage] = {
-        courses: pageCourses
+        programs: pagePrograms
     };
 
     // Set up the next page (if there is more than one page).
-    const remainingCourses = nextPageStart !== false ? courses.slice(nextPageStart, courses.length) : [];
-    if (remainingCourses.length) {
+    const remainingPrograms = nextPageStart !== false ? programs.slice(nextPageStart, programs.length) : [];
+    if (remainingPrograms.length) {
         loadedPages[currentPage + 1] = {
-            courses: remainingCourses
+            programs: remainingPrograms
         };
     }
 
     // Set the last page to either the current or next page.
-    if (loadedPages[currentPage].courses.length < pageData.limit || !remainingCourses.length) {
+    if (loadedPages[currentPage].programs.length < pageData.limit || !remainingPrograms.length) {
         lastPage = currentPage;
         if (activeSearch === null) {
             actions.allItemsLoaded(currentPage);
         }
     } else if (typeof (loadedPages[currentPage + 1]) !== 'undefined'
-        && loadedPages[currentPage + 1].courses.length < pageData.limit) {
+        && loadedPages[currentPage + 1].programs.length < pageData.limit) {
         lastPage = currentPage + 1;
     }
 
-    courseOffset = coursesData.nextoffset;
+    programOffset = programsData.nextoffset;
 };
 
 /**
  * In cases when switching between regular rendering and search rendering we need to reset some variables.
  */
 const resetGlobals = () => {
-    courseOffset = 0;
+    programOffset = 0;
     loadedPages = [];
     lastPage = 0;
     lastLimit = 0;
 };
 
 /**
- * The default functionality of fetching paginated courses without special handling.
+ * The default functionality of fetching paginated programs without special handling.
  *
  * @return {function(Object, Object, Object, Object, Object, Promise, Number): void}
  */
 const standardFunctionalityCurry = () => {
     resetGlobals();
     return (filters, currentPage, pageData, actions, root, promises, limit) => {
-        const pagePromise = getMyCourses(
+        const pagePromise = getMyPrograms(
             filters,
             limit
-        ).then(coursesData => {
-            pageBuilder(coursesData, currentPage, pageData, actions);
-            return renderCourses(root, loadedPages[currentPage]);
+        ).then(programsData => {
+            pageBuilder(programsData, currentPage, pageData, actions);
+            return renderPrograms(root, loadedPages[currentPage]);
         }).catch(Notification.exception);
 
         promises.push(pagePromise);
@@ -674,13 +659,13 @@ const standardFunctionalityCurry = () => {
 const searchFunctionalityCurry = () => {
     resetGlobals();
     return (filters, currentPage, pageData, actions, root, promises, limit, inputValue) => {
-        const searchingPromise = getSearchMyCourses(
+        const searchingPromise = getSearchMyPrograms(
             filters,
             limit,
             inputValue
-        ).then(coursesData => {
-            pageBuilder(coursesData, currentPage, pageData, actions);
-            return renderCourses(root, loadedPages[currentPage]);
+        ).then(programsData => {
+            pageBuilder(programsData, currentPage, pageData, actions);
+            return renderPrograms(root, loadedPages[currentPage]);
         }).catch(Notification.exception);
 
         promises.push(searchingPromise);
@@ -688,14 +673,14 @@ const searchFunctionalityCurry = () => {
 };
 
 /**
- * Initialise the courses list and cards views on page load.
+ * Initialise the programs list and cards views on page load.
  *
- * @param {object} root The root element for the courses view.
- * @param {function} promiseFunction How do we fetch the courses and what do we do with them?
+ * @param {object} root The root element for the programs view.
+ * @param {function} promiseFunction How do we fetch the programs and what do we do with them?
  * @param {null | string} inputValue What to search for
  */
 const initializePagedContent = (root, promiseFunction, inputValue = null) => {
-    const pagingLimit = parseInt(root.find(SELECTORS.courseView.region).attr('data-paging'), 10);
+    const pagingLimit = parseInt(root.find(SELECTORS.programView.region).attr('data-paging'), 10);
     let itemsPerPage = itemsPerPageFunc(pagingLimit, root);
 
     const config = {...{}, ...DEFAULT_PAGED_CONTENT_CONFIG};
@@ -712,14 +697,14 @@ const initializePagedContent = (root, promiseFunction, inputValue = null) => {
                 // Reset local variables if limits have changed.
                 if (+lastLimit !== +limit) {
                     loadedPages = [];
-                    courseOffset = 0;
+                    programOffset = 0;
                     lastPage = 0;
                 }
 
                 if (lastPage === currentPage) {
                     // If we are on the last page and have it's data then load it from cache.
                     actions.allItemsLoaded(lastPage);
-                    promises.push(renderCourses(root, loadedPages[currentPage]));
+                    promises.push(renderPrograms(root, loadedPages[currentPage]));
                     return;
                 }
 
@@ -735,7 +720,7 @@ const initializePagedContent = (root, promiseFunction, inputValue = null) => {
                 // Get the current applied filters.
                 const filters = getFilterValues(root);
 
-                // Call the curried function that'll handle the course promise and any manipulation of it.
+                // Call the curried function that'll handle the program promise and any manipulation of it.
                 promiseFunction(filters, currentPage, pageData, actions, root, promises, limit, inputValue);
             });
             return promises;
@@ -745,14 +730,14 @@ const initializePagedContent = (root, promiseFunction, inputValue = null) => {
 
     pagedContentPromise.then((html, js) => {
         registerPagedEventHandlers(root, namespace);
-        return Templates.replaceNodeContents(root.find(SELECTORS.courseView.region), html, js);
+        return Templates.replaceNodeContents(root.find(SELECTORS.programView.region), html, js);
     }).catch(Notification.exception);
 };
 
 /**
- * Listen to, and handle events for the myoverview block.
+ * Listen to, and handle events for the muprogmyoverview block.
  *
- * @param {Object} root The myoverview block container element.
+ * @param {Object} root The muprogmyoverview block container element.
  * @param {HTMLElement} page The whole HTMLElement for our block.
  */
 const registerEventListeners = (root, page) => {
@@ -763,15 +748,15 @@ const registerEventListeners = (root, page) => {
 
     root.on(CustomEvents.events.activate, SELECTORS.ACTION_ADD_FAVOURITE, (e, data) => {
         const favourite = $(e.target).closest(SELECTORS.ACTION_ADD_FAVOURITE);
-        const courseId = getCourseId(favourite);
-        addToFavourites(root, courseId);
+        const programId = getProgramId(favourite);
+        addToFavourites(root, programId);
         data.originalEvent.preventDefault();
     });
 
     root.on(CustomEvents.events.activate, SELECTORS.ACTION_REMOVE_FAVOURITE, (e, data) => {
         const favourite = $(e.target).closest(SELECTORS.ACTION_REMOVE_FAVOURITE);
-        const courseId = getCourseId(favourite);
-        removeFromFavourites(root, courseId);
+        const programId = getProgramId(favourite);
+        removeFromFavourites(root, programId);
         data.originalEvent.preventDefault();
     });
 
@@ -779,17 +764,17 @@ const registerEventListeners = (root, page) => {
         data.originalEvent.preventDefault();
     });
 
-    root.on(CustomEvents.events.activate, SELECTORS.ACTION_HIDE_COURSE, (e, data) => {
-        const target = $(e.target).closest(SELECTORS.ACTION_HIDE_COURSE);
-        const courseId = getCourseId(target);
-        hideCourse(root, courseId);
+    root.on(CustomEvents.events.activate, SELECTORS.ACTION_HIDE_PROGRAM, (e, data) => {
+        const target = $(e.target).closest(SELECTORS.ACTION_HIDE_PROGRAM);
+        const programId = getProgramId(target);
+        hideProgram(root, programId);
         data.originalEvent.preventDefault();
     });
 
-    root.on(CustomEvents.events.activate, SELECTORS.ACTION_SHOW_COURSE, (e, data) => {
-        const target = $(e.target).closest(SELECTORS.ACTION_SHOW_COURSE);
-        const courseId = getCourseId(target);
-        showCourse(root, courseId);
+    root.on(CustomEvents.events.activate, SELECTORS.ACTION_SHOW_PROGRAM, (e, data) => {
+        const target = $(e.target).closest(SELECTORS.ACTION_SHOW_PROGRAM);
+        const programId = getProgramId(target);
+        showProgram(root, programId);
         data.originalEvent.preventDefault();
     });
 
@@ -817,7 +802,7 @@ const registerEventListeners = (root, page) => {
  * Reset the search icon and trigger the init for the block.
  *
  * @param {HTMLElement} clearIcon Our closing icon to manipulate.
- * @param {Object} root The myoverview block container element.
+ * @param {Object} root The muprogmyoverview block container element.
  */
 export const clearSearch = (clearIcon, root) => {
     clearIcon.classList.add('d-none');
@@ -834,20 +819,20 @@ const activeSearch = (clearIcon) => {
 };
 
 /**
- * Intialise the courses list and cards views on page load.
+ * Intialise the programs list and cards views on page load.
  *
- * @param {object} root The root element for the courses view.
+ * @param {object} root The root element for the programs view.
  */
 export const init = root => {
     root = $(root);
     loadedPages = [];
     lastPage = 0;
-    courseOffset = 0;
+    programOffset = 0;
 
     if (!root.attr('data-init')) {
         const page = document.querySelector(SELECTORS.region.selectBlock);
         registerEventListeners(root, page);
-        namespace = "block_myoverview_" + root.attr('id') + "_" + Math.random();
+        namespace = "block_muprogmyoverview_" + root.attr('id') + "_" + Math.random();
         root.attr('data-init', true);
     }
 
@@ -855,8 +840,8 @@ export const init = root => {
 };
 
 /**
- * Reset the courses views to their original
- * state on first page load.courseOffset
+ * Reset the programs views to their original
+ * state on first page load.programOffset
  *
  * This is called when configuration has changed for the event lists
  * to cause them to reload their data.
@@ -866,9 +851,9 @@ export const init = root => {
 export const reset = root => {
     if (loadedPages.length > 0) {
         const filters = getFilterValues(root);
-        // If the display mode is changed to 'summary' but the summary display has not been loaded yet,
-        // we need to re-fetch the courses to include the course summary text.
-        if (filters.display === 'summary' && !summaryDisplayLoaded) {
+        // If the display mode is changed to 'description' but the description display has not been loaded yet,
+        // we need to re-fetch the programs to include the program description text.
+        if (filters.display === 'description' && !descriptionDisplayLoaded) {
             const page = document.querySelector(SELECTORS.region.selectBlock);
             const input = page.querySelector(SELECTORS.region.searchInput);
             if (input.value !== '') {
@@ -877,9 +862,9 @@ export const reset = root => {
                 initializePagedContent(root, standardFunctionalityCurry());
             }
         } else {
-            loadedPages.forEach((courseList, index) => {
+            loadedPages.forEach((programList, index) => {
                 let pagedContentPage = getPagedContentContainer(root, index);
-                renderCourses(root, courseList).then((html, js) => {
+                renderPrograms(root, programList).then((html, js) => {
                     return Templates.replaceNodeContents(pagedContentPage, html, js);
                 }).catch(Notification.exception);
             });
