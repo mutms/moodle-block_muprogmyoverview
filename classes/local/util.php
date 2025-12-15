@@ -73,6 +73,7 @@ final class util {
 
     /**
      * Once a week clean up hidden programs without allocation.
+     * @param bool $force
      */
     public static function cleanup_hidden_programs(bool $force = false): void {
         global $DB, $USER;

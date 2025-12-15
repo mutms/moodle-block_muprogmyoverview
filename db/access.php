@@ -17,7 +17,7 @@
 // phpcs:disable moodle.Files.BoilerplateComment.CommentEndedTooSoon
 
 /**
- * My programs hook callbacks.
+ * My programs capabilities.
  *
  * @package     block_muprogmyoverview
  * @copyright   2025 Petr Skoda
@@ -26,10 +26,5 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$callbacks = [
-    [
-        'hook' => \core\hook\navigation\primary_extend::class,
-        'callback' => [\block_muprogmyoverview\local\util::class, 'hook_primary_extend'],
-        'priority' => 10000,
-    ],
+$capabilities = [
 ];
