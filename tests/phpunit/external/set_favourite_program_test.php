@@ -61,13 +61,13 @@ final class set_favourite_program_test extends \advanced_testcase {
 
         $result = set_favourite_program::execute($program1->id, 1);
         $result = set_favourite_program::validate_parameters(set_favourite_program::execute_returns(), $result);
-        $this->assertSame(['warnings' =>[]], $result);
+        $this->assertSame(['warnings' => []], $result);
         $this->assertTrue($ufservice1->favourite_exists('tool_muprog', 'programs', $program1->id, $syscontext));
         $this->assertFalse($ufservice2->favourite_exists('tool_muprog', 'programs', $program1->id, $syscontext));
 
         $result = set_favourite_program::execute($program1->id, 0);
         $result = set_favourite_program::validate_parameters(set_favourite_program::execute_returns(), $result);
-        $this->assertSame(['warnings' =>[]], $result);
+        $this->assertSame(['warnings' => []], $result);
         $this->assertFalse($ufservice1->favourite_exists('tool_muprog', 'programs', $program1->id, $syscontext));
         $this->assertFalse($ufservice2->favourite_exists('tool_muprog', 'programs', $program1->id, $syscontext));
     }
