@@ -43,8 +43,8 @@
     }
     .whitebutton .btn-secondary {
         background: white;
-        border-color: var(--primary);
-        color: var(--primary);
+        border-color: var(--bs-primary);
+        color: var(--bs-primary);
     }
     .program-card .card-img-top {
         height: 7rem;

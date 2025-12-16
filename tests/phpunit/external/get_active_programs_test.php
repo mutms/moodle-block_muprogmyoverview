@@ -118,7 +118,7 @@ final class get_active_programs_test extends \advanced_testcase {
             $p1->viewurl
         );
         $this->assertSame('Not open yet', $p1->status);
-        $this->assertSame('badge-light', $p1->statusclass);
+        $this->assertSame('bg-light text-dark', $p1->statusclass);
         $this->assertSame(false, $p1->hasprogress);
         $this->assertSame(0, $p1->progress);
         $this->assertSame(true, $p1->isfavourite);
@@ -138,7 +138,7 @@ final class get_active_programs_test extends \advanced_testcase {
             $p2->viewurl
         );
         $this->assertSame('Open', $p2->status);
-        $this->assertSame('badge-primary', $p2->statusclass);
+        $this->assertSame('bg-primary', $p2->statusclass);
         $this->assertSame(false, $p2->hasprogress);
         $this->assertSame(null, $p2->progress);
         $this->assertSame(false, $p2->isfavourite);

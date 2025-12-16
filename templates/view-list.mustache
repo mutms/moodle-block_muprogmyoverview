@@ -44,30 +44,27 @@
                 <div class="col-md-2 d-flex align-items-center mb-sm-3 mb-md-0">
                     <a href="{{viewurl}}" tabindex="-1"  class="mw-100 w-100">
                         <div class="rounded list-image mw-100" style='background-image: url("{{{programimage}}}");'>
-                            <span class="sr-only">{{fullname}}</span>
+                            <span class="visually-hidden">{{fullname}}</span>
                         </div>
                     </a>
                 </div>
                 <div class="col-md-9 d-flex flex-column">
                     <div class="text-muted muted d-flex flex-wrap">
-                        {{#showprogramcategory}}
-                            <div class="px-1">|</div>
-                        {{/showprogramcategory}}
-                        <span class="sr-only">
+                        <span class="visually-hidden">
                             {{#str}}programidnumber, tool_muprog{{/str}}
                         </span>
                         <div>{{{idnumber}}}</div>
                     </div>
                     <a href="{{viewurl}}" class="aalink programname">
                         {{> block_muprogmyoverview/favouriteicon }}
-                        <span class="sr-only">
+                        <span class="visually-hidden">
                             {{#str}}programname, tool_muprog{{/str}}
                         </span>
                         {{{fullname}}}
                     </a>
                     {{#showprogramcategory}}
                         <div class="text-muted muted d-flex flex-wrap">
-                            <span class="sr-only">
+                            <span class="visually-hidden">
                                 {{#str}}programcategory, tool_muprog{{/str}}
                             </span>
                             <span class="categoryname">
@@ -76,7 +73,7 @@
                         </div>
                     {{/showprogramcategory}}
                     <div>
-                        <span class="sr-only">
+                        <span class="visually-hidden">
                             {{#str}}programstatus, tool_muprog{{/str}}
                         </span>
                         <span class="badge {{statusclass}}">

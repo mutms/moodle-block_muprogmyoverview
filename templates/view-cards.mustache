@@ -37,7 +37,7 @@
 
 {{< block_muprogmyoverview/programcards }}
     {{$menu}}
-        <div class="card-footer menu border-0 bg-white ms-auto">
+        <div class="card-footer menu border-0 bg-white ms-auto p-2">
             {{> block_muprogmyoverview/program-action-menu }}
         </div>
     {{/menu}}
@@ -50,7 +50,7 @@
     {{/progress}}
     {{$programname}}
         <span class="multiline" title="{{fullname}}">
-            <span class="sr-only">{{{fullname}}}</span>
+            <span class="visually-hidden">{{{fullname}}}</span>
             <span aria-hidden="true">
                 {{#shortentext}}55, {{{fullname}}} {{/shortentext}}
             </span>
@@ -58,7 +58,7 @@
     {{/programname}}
     {{$programcategory}}
         {{#showprogramcategory}}
-            <span class="sr-only">
+            <span class="visually-hidden">
                 {{#str}}programcategory, tool_muprog{{/str}}
             </span>
             <span class="categoryname text-truncate">
@@ -66,9 +66,4 @@
             </span>
         {{/showprogramcategory}}
     {{/programcategory}}
-    {{$divider}}
-        {{#showprogramcategory}}
-            <div class="px-1">|</div>
-        {{/showprogramcategory}}
-    {{/divider}}
 {{/ block_muprogmyoverview/programcards }}
