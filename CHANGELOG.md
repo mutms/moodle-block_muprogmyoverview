@@ -4,27 +4,27 @@ Plugin versioning is derived from Moodle releases, it does not comply with the s
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
-## [Unreleased]
+## [Unreleased](https://github.com/mutms/moodle-block_muprogmyoverview/compare/v4.5.10.01...HEAD)
 
 - No changes
 
-## [v4.5.10.01] - 2026-02-12
+## [v4.5.10.01](https://github.com/mutms/moodle-block_muprogmyoverview/compare/mu-4.5.9-01...v4.5.10.01) - 2026-02-12
 
 ### Changed
 
 - Switched to new release number format to prepare for composer support
 
-## [mu-4.5.9-01] - 2026-02-08
+## [mu-4.5.9-01](https://github.com/mutms/moodle-block_muprogmyoverview/compare/mu-4.5.8-04...mu-4.5.9-01) - 2026-02-08
 
 ### Fixed
 
 - Added workaround for problematic Timeline block installation
 
-## [mu-4.5.8-04] - 2026-01-25
+## [mu-4.5.8-04](https://github.com/mutms/moodle-block_muprogmyoverview/compare/mu-4.5.8-03...mu-4.5.8-04) - 2026-01-25
 
 - No changes
 
-## [mu-4.5.8-03] - 2025-12-31
+## [mu-4.5.8-03](https://github.com/mutms/moodle-block_muprogmyoverview/compare/mu-4.5.8-00...mu-4.5.8-03) - 2025-12-31
 
 ### Changed
 
@@ -35,7 +35,7 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 - Fixed error when tool_mulib dependency is missing
 
-## [mu-4.5.8-00] - 2025-12-16
+## [mu-4.5.8-00](https://github.com/mutms/moodle-block_muprogmyoverview/tree/mu-4.5.8-00) - 2025-12-16
 
 ### Added
 
