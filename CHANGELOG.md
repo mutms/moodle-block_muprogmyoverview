@@ -6,6 +6,10 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 ## [Unreleased](https://github.com/mutms/moodle-block_muprogmyoverview/compare/v4.5.10.01...HEAD)
 
+### Added
+
+- Added Program management link to My programs page
+
 ### Changes
 
 - Geopattern generated program images are served via standard pluginfile.php
