@@ -220,9 +220,9 @@ final class get_active_programs extends external_api {
                 $result->showprogramcategory = 0;
             }
 
-            $result->fullname = mulib::clean_string(format_string($program->fullname));
+            $result->fullname = clean_string(format_string($program->fullname));
 
-            $result->idnumber = mulib::clean_string($program->idnumber);
+            $result->idnumber = clean_string($program->idnumber);
 
             if ($allocation->timestart) {
                 $result->startdate = userdate($allocation->timestart, $shortdate);
