@@ -19,6 +19,12 @@ This plugin does not provide any functionality by itself.
 
 See [online documentation](https://docs.mutms.org/muprog/) for more information.
 
+## AI disclosure
+
+Parts of this plugin were written with the help of Claude (Anthropic). A human
+maintainer reviewed, corrected and accepted everything before it was committed.
+The design decisions and the final code are the maintainer's own.
+
 ---
 
 > This plugin is based on "My courses" block and main menu entry to replicate the same experience for MuTMS Programs.
