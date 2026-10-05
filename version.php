@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'block_muprogmyoverview';
-$plugin->version = 2026092753;
+$plugin->version = 2026100553;
 $plugin->requires = 2024100700;
 $plugin->supported = [503, 503];
 

@@ -16,8 +16,8 @@ Feature: Program overview block allows viewer to access Program managment
       | user      | role          | contextlevel | reference |
       | viewer1   | pviewer       | System       |           |
     And the following "tool_muprog > programs" exist:
-      | fullname    | idnumber | category | publicaccess |
-      | Program 000 | PR0      |          | 1            |
+      | fullname    | idnumber | category |
+      | Program 000 | PR0      |          |
     And the following "tool_muprog > program_allocations" exist:
       | program     | user    |
       | Program 000 | viewer1 |
