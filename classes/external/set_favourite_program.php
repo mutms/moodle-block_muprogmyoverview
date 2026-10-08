@@ -45,8 +45,8 @@ final class set_favourite_program extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'id' => new external_value(PARAM_INT, 'Program id'),
-            'favourite' => new external_value(PARAM_BOOL, 'Favourite status'),
+            'id' => new external_value(PARAM_INT, 'Program id', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
+            'favourite' => new external_value(PARAM_BOOL, 'Favourite status', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
         ]);
     }
 

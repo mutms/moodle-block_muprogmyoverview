@@ -44,12 +44,12 @@ final class get_active_programs extends external_api {
      */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
-            'classification' => new external_value(PARAM_ALPHA, 'future, inprogress, or past'),
-            'limit' => new external_value(PARAM_INT, 'Result set limit', VALUE_DEFAULT, 0),
-            'offset' => new external_value(PARAM_INT, 'Result set offset', VALUE_DEFAULT, 0),
+            'classification' => new external_value(PARAM_ALPHA, 'future, inprogress, or past', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
+            'limit' => new external_value(PARAM_INT, 'Result set limit', VALUE_DEFAULT, 0, NULL_NOT_ALLOWED),
+            'offset' => new external_value(PARAM_INT, 'Result set offset', VALUE_DEFAULT, 0, NULL_NOT_ALLOWED),
             'sort' => new external_value(PARAM_ALPHANUM, 'Sort string: title, idnumber or duedate', VALUE_DEFAULT, null),
             'searchvalue' => new external_value(PARAM_RAW, 'The value a user wishes to search against', VALUE_DEFAULT, null),
-            'showdescription' => new external_value(PARAM_BOOL, 'Return description', VALUE_DEFAULT, null),
+            'showdescription' => new external_value(PARAM_BOOL, 'Return description', VALUE_DEFAULT, 0, NULL_NOT_ALLOWED),
         ]);
     }
 

@@ -237,4 +237,15 @@ final class get_active_programs_test extends \advanced_testcase {
         $p2 = (object)$result['programs'][0];
         $this->assertSame((int)$program2->id, $p2->id);
     }
+
+    public function test_execute_optional_parameters(): void {
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        // Web service clients may omit optional parameters, core then calls execute() with all defaults from the definition.
+        $params = get_active_programs::validate_parameters(get_active_programs::execute_parameters(), ['classification' => 'inprogress']);
+        $result = get_active_programs::execute(...array_values($params));
+        $result = get_active_programs::validate_parameters(get_active_programs::execute_returns(), $result);
+        $this->assertCount(0, $result['programs']);
+    }
 }
