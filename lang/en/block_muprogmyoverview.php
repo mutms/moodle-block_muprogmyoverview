@@ -89,4 +89,4 @@ $string['sortbytitle'] = 'Sort by program name';
 $string['title'] = 'Program name';
 $string['viewquickstart'] = 'View Quickstart guide';
 $string['zero_default_intro'] = 'Once you\'re allocated to a new program, it will appear here.';
-$string['zero_default_title'] = 'You not have any active programs.';
+$string['zero_default_title'] = 'You do not have any active programs.';
