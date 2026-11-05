@@ -26,6 +26,7 @@
  * @copyright  2025 Petr Skoda
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace block_muprogmyoverview\phpunit\privacy;
 
 use core_privacy\local\request\writer;
