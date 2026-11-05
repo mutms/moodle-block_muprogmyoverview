@@ -21,17 +21,18 @@ namespace block_muprogmyoverview\phpunit\local;
 
 use block_muprogmyoverview\local\util;
 use tool_muprog\local\program;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * My programs page helper tests.
  *
- * @group       MuTMS
  * @package     block_muprogmyoverview
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @covers \block_muprogmyoverview\local\util
  */
+#[CoversClass(\block_muprogmyoverview\local\util::class)]
+#[Group('MuTMS')]
 final class util_test extends \advanced_testcase {
     protected function setUp(): void {
         parent::setUp();

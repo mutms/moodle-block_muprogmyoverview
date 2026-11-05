@@ -21,17 +21,18 @@ namespace block_muprogmyoverview\phpunit\external;
 
 use block_muprogmyoverview\external\set_favourite_program;
 use tool_muprog\local\program;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * My programs external API tests.
  *
- * @group       MuTMS
  * @package     block_muprogmyoverview
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @covers \block_muprogmyoverview\external\set_favourite_program
  */
+#[CoversClass(\block_muprogmyoverview\external\set_favourite_program::class)]
+#[Group('MuTMS')]
 final class set_favourite_program_test extends \advanced_testcase {
     protected function setUp(): void {
         parent::setUp();

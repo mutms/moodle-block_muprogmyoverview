@@ -20,17 +20,18 @@
 namespace block_muprogmyoverview\phpunit\external;
 
 use block_muprogmyoverview\external\get_active_programs;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * My programs external API tests.
  *
- * @group       MuTMS
  * @package     block_muprogmyoverview
  * @copyright   2025 Petr Skoda
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @covers \block_muprogmyoverview\external\get_active_programs
  */
+#[CoversClass(\block_muprogmyoverview\external\get_active_programs::class)]
+#[Group('MuTMS')]
 final class get_active_programs_test extends \advanced_testcase {
     protected function setUp(): void {
         parent::setUp();

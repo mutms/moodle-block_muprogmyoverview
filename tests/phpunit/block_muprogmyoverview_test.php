@@ -20,16 +20,18 @@
 
 namespace block_muprogmyoverview\phpunit;
 
+use PHPUnit\Framework\Attributes\Group;
+
 /**
  * My programs overview page block test.
  *
- * @group      MuTMS
  * @package    block_muprogmyoverview
  * @category   test
  * @copyright  2019 Juan Leyva <juan@moodle.com>
  * @copyright  2025 Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[Group('MuTMS')]
 final class block_muprogmyoverview_test extends \advanced_testcase {
     /**
      * Test getting block configuration

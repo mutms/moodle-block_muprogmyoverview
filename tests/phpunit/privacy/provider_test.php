@@ -20,7 +20,6 @@
 /**
  * Unit tests for the block_muprogmyoverview implementation of the privacy API.
  *
- * @group      MuTMS
  * @package    block_muprogmyoverview
  * @category   test
  * @copyright  2018 Peter Dias <peter@moodle.com>
@@ -31,6 +30,8 @@ namespace block_muprogmyoverview\phpunit\privacy;
 
 use core_privacy\local\request\writer;
 use block_muprogmyoverview\privacy\provider;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Unit tests for the block_muprogmyoverview implementation of the privacy API.
@@ -38,6 +39,7 @@ use block_muprogmyoverview\privacy\provider;
  * @copyright  2018 Peter Dias <peter@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[Group('MuTMS')]
 final class provider_test extends \core_privacy\tests\provider_testcase {
     /**
      * Ensure that export_user_preferences returns no data if the user has not visited the muprogmyoverview block.
@@ -56,9 +58,8 @@ final class provider_test extends \core_privacy\tests\provider_testcase {
      * @param string $type The name of the user preference to get/set
      * @param string $value The value you are storing
      * @param mixed $expected
-     *
-     * @dataProvider user_preference_provider
      */
+    #[DataProvider('user_preference_provider')]
     public function test_export_user_preferences($type, $value, $expected): void {
         $this->resetAfterTest();
         $user = $this->getDataGenerator()->create_user();

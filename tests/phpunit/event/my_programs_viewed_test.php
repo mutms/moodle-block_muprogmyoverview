@@ -19,17 +19,18 @@
 namespace block_muprogmyoverview\phpunit\event;
 
 use block_muprogmyoverview\event\my_programs_viewed;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * My programs page viewed event test.
  *
- * @group      MuTMS
  * @package    block_muprogmyoverview
  * @copyright  2025 Petr Skoda
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @covers \block_muprogmyoverview\event\my_programs_viewed
  */
+#[CoversClass(\block_muprogmyoverview\event\my_programs_viewed::class)]
+#[Group('MuTMS')]
 final class my_programs_viewed_test extends \advanced_testcase {
     public function setUp(): void {
         parent::setUp();
