@@ -6,6 +6,10 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 ## [Unreleased]
 
+### Added
+
+- Czech translation and AI-produced previews of German, French, Italian, Portuguese and Spanish translations
+
 ### Fixed
 
 - _block_muprogmyoverview_get_active_programs_ web service failed when _showdescription_ parameter was omitted
