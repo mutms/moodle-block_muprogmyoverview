@@ -8,6 +8,8 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 ### Added
 
+- Block can be added to Dashboard
+- New setting _Add "My programs" menu_ controlling the primary navigation item, it is disabled on new installations and enabled during upgrade
 - Czech translation and AI-produced previews of German, French, Italian, Portuguese and Spanish translations
 
 ### Fixed

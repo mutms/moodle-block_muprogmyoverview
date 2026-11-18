@@ -5,8 +5,15 @@
 Block required by the [Programs plugin](https://github.com/mutms/moodle-tool_muprog)
 — fully open source under GPL 3.0. Part of the [MuTMS suite](https://github.com/mutms).
 
-Provides a dedicated My programs overview page — a programs equivalent of the standard Moodle
-"My courses" page, accessible from the main menu.
+Provides a My programs overview block — a programs equivalent of the standard Moodle
+"Course overview" block. The block can be added to:
+
+* Dashboard
+* custom home pages provided by the [Custom home pages plugin](https://github.com/mutms/moodle-tool_muhome)
+
+Optionally a dedicated "My programs" page can be added to the main menu for all users
+allocated to programs, see the _Add "My programs" menu_ block setting. The setting is disabled
+on new installations and it is kept enabled on sites upgraded from older versions.
 
 This plugin does not provide any functionality by itself.
 
@@ -27,5 +34,6 @@ The design decisions and the final code are the maintainer's own.
 
 ---
 
-> This plugin is based on "My courses" block and main menu entry to replicate the same experience for MuTMS Programs.
+> This plugin is based on the standard Moodle "Course overview" block (block_myoverview) and the former "My courses"
+> main menu entry, it replicates the same experience for MuTMS Programs.
 > MuTMS is an independent open-source project, not affiliated with Moodle HQ.

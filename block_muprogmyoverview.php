@@ -35,11 +35,15 @@ class block_muprogmyoverview extends block_base {
     /**
      * Returns the contents.
      *
-     * @return stdClass contents of block
+     * @return stdClass|null contents of block
      */
-    public function get_content(): stdClass {
+    public function get_content(): ?stdClass {
         if (isset($this->content)) {
             return $this->content;
+        }
+
+        if (!isloggedin() || isguestuser()) {
+            return null;
         }
 
         if (!\tool_mulib\local\mulib::is_muprog_available()) {
@@ -70,7 +74,8 @@ class block_muprogmyoverview extends block_base {
             'course-view' => false,
             'site' => false,
             'mod' => false,
-            'my' => false,
+            'my' => true,
+            'tool-muhome-index' => true,
             'block-muprogmyoverview' => true,
         ];
     }
@@ -91,21 +96,36 @@ class block_muprogmyoverview extends block_base {
 
     #[\Override]
     public function instance_can_be_edited(): bool {
-        return false;
+        if ($this->page->pagetype !== 'block-muprogmyoverview-index') {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     #[\Override]
     public function instance_can_be_hidden(): bool {
-        return false;
+        if ($this->page->pagetype !== 'block-muprogmyoverview-index') {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     #[\Override]
     public function instance_can_be_collapsed(): bool {
-        return false;
+        if ($this->page->pagetype !== 'block-muprogmyoverview-index') {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     #[\Override]
     public function hide_header(): bool {
+        if ($this->page->pagetype !== 'block-muprogmyoverview-index') {
+            return false;
+        }
         if (defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING) {
             return false;
         }
