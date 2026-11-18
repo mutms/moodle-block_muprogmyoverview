@@ -6,7 +6,7 @@
 # Add prose with a description block (markdown, no raw HTML):
 #   description: |
 #     What the plugin does, and who it is for.
-name: My programs overview page
+name: My programs overview
 summary: Block required by the Programs plugin — fully open source under GPL 3.0. Part of the MuTMS suite.
 # Disclosure labels — all that apply:
 #   fully-free | freemium | paid-service | external-account

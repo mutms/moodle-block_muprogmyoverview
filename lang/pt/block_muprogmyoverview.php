@@ -28,6 +28,8 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['addprimarymenu'] = 'Adicionar o menu "Os meus programas"';
+$string['addprimarymenu_desc'] = 'Se ativado, o item "Os meus programas" é adicionado ao menu principal para todos os utilizadores alocados a programas. Se desativado, a vista geral dos programas pode ser adicionada como bloco ao painel do utilizador.';
 $string['addtofavourites'] = 'Marcar programa com estrela';
 $string['all'] = 'Todos';
 $string['allincludinghidden'] = 'Todos (incluindo os removidos da visualização)';
@@ -73,10 +75,12 @@ $string['inprogress'] = 'A decorrer';
 $string['layouts'] = 'Estruturas disponíveis';
 $string['layouts_help'] = 'Estruturas da página Os meus programas que estarão disponíveis para seleção pelos utilizadores. Se nenhuma for selecionada, será usada a estrutura de cartões.';
 $string['list'] = 'Lista';
+$string['muprogmyoverview:addinstance'] = 'Adicionar o bloco Vista geral dos meus programas';
+$string['muprogmyoverview:myaddinstance'] = 'Adicionar o bloco Vista geral dos meus programas ao painel do utilizador';
 $string['myprograms'] = 'Os meus programas';
 $string['noprograms'] = 'Sem programas';
 $string['past'] = 'Histórico';
-$string['pluginname'] = 'Página Os meus programas';
+$string['pluginname'] = 'Vista geral dos meus programas';
 $string['privacy:metadata:overviewgroupingpreference'] = 'A preferência de agrupamento na página Os meus programas.';
 $string['privacy:metadata:overviewpagingpreference'] = 'A preferência de paginação na página Os meus programas.';
 $string['privacy:metadata:overviewsortpreference'] = 'A preferência de ordenação na página Os meus programas.';

@@ -50,6 +50,17 @@ Feature: The My programs overview block can be added to Dashboard
     Then I should not see "Program 1" in the "My programs overview" "block"
     And I should not see "Program 2" in the "My programs overview" "block"
 
+  Scenario: My programs overview block on Dashboard is not displayed to users without programs
+    Given I log in as "student2"
+    And I follow "Dashboard"
+    And I turn editing mode on
+    And I add the "My programs overview" block
+    And I should see "My programs overview"
+
+    When I turn editing mode off
+    Then I should not see "My programs overview"
+    And I should not see "No programs"
+
   Scenario: User can hide and show My programs overview block on Dashboard
     Given I log in as "student1"
     And I follow "Dashboard"

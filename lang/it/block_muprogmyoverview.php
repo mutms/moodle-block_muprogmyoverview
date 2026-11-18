@@ -24,6 +24,8 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['addprimarymenu'] = 'Aggiungi il menu "I miei programmi"';
+$string['addprimarymenu_desc'] = 'Se abilitato, la voce "I miei programmi" viene aggiunta al menu principale per tutti gli utenti assegnati a programmi. Se disabilitato, la panoramica dei programmi può essere aggiunta come blocco alla Dashboard.';
 $string['addtofavourites'] = 'Aggiungi programma ai preferiti';
 $string['all'] = 'Tutti';
 $string['allincludinghidden'] = 'Tutti (inclusi rimossi dalla visualizzazione)';
@@ -69,10 +71,12 @@ $string['inprogress'] = 'In svolgimento';
 $string['layouts'] = 'Impaginazioni disponibili';
 $string['layouts_help'] = 'Impaginazioni della panoramica dei miei programmi che gli utenti possono selezionare. Se non ne viene selezionata nessuna, verrà utilizzata l\'impaginazione a matrice.';
 $string['list'] = 'Elenco';
+$string['muprogmyoverview:addinstance'] = 'Aggiungere il blocco Panoramica dei miei programmi';
+$string['muprogmyoverview:myaddinstance'] = 'Aggiungere il blocco Panoramica dei miei programmi alla Dashboard';
 $string['myprograms'] = 'I miei programmi';
 $string['noprograms'] = 'Nessun programma';
 $string['past'] = 'Conclusi';
-$string['pluginname'] = 'Pagina di panoramica dei miei programmi';
+$string['pluginname'] = 'Panoramica dei miei programmi';
 $string['privacy:metadata:overviewgroupingpreference'] = 'Preferenza di raggruppamento della pagina di panoramica dei miei programmi.';
 $string['privacy:metadata:overviewpagingpreference'] = 'Preferenza sulla paginazione della pagina di panoramica dei miei programmi.';
 $string['privacy:metadata:overviewsortpreference'] = 'Preferenza sull\'ordinamento della pagina di panoramica dei miei programmi.';

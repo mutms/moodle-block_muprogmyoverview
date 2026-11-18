@@ -46,7 +46,8 @@ Feature: The My programs overview block can be added to custom home pages
 
     When I log in as "student2"
     And I am on the "Home page 1" "tool_muhome > Home page" page
-    Then I should not see "Program 1"
+    Then I should see "HP1" in the "h1" "css_element"
+    And I should not see "My programs overview"
     And I log out
 
     When I am on the "Home page 1" "tool_muhome > Home page" page

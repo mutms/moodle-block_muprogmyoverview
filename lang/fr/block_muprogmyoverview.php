@@ -28,6 +28,8 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['addprimarymenu'] = 'Ajouter le menu « Mes programmes »';
+$string['addprimarymenu_desc'] = 'Si ce réglage est activé, l’élément « Mes programmes » est ajouté au menu principal pour tous les utilisateurs affectés à des programmes. S’il est désactivé, la vue d’ensemble des programmes peut être ajoutée comme bloc au tableau de bord.';
 $string['addtofavourites'] = 'Marquer ce programme comme favori';
 $string['all'] = 'Tout';
 $string['allincludinghidden'] = 'Tout (y compris retirés de l’affichage)';
@@ -73,10 +75,12 @@ $string['inprogress'] = 'En cours';
 $string['layouts'] = 'Dispositions disponibles';
 $string['layouts_help'] = 'Les dispositions de la vue d’ensemble de mes programmes que les utilisateurs peuvent sélectionner. Si aucune n’est choisie, la disposition en cartes sera utilisée.';
 $string['list'] = 'Liste';
+$string['muprogmyoverview:addinstance'] = 'Ajouter le bloc Vue d’ensemble de mes programmes';
+$string['muprogmyoverview:myaddinstance'] = 'Ajouter le bloc Vue d’ensemble de mes programmes au tableau de bord';
 $string['myprograms'] = 'Mes programmes';
 $string['noprograms'] = 'Aucun programme';
 $string['past'] = 'Passés';
-$string['pluginname'] = 'Page de vue d’ensemble de mes programmes';
+$string['pluginname'] = 'Vue d’ensemble de mes programmes';
 $string['privacy:metadata:overviewgroupingpreference'] = 'Le réglage du filtre de la page de vue d’ensemble de mes programmes.';
 $string['privacy:metadata:overviewpagingpreference'] = 'La préférence de pagination de la page de vue d’ensemble de mes programmes.';
 $string['privacy:metadata:overviewsortpreference'] = 'Le réglage de tri de la page de vue d’ensemble de mes programmes.';

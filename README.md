@@ -1,4 +1,4 @@
-# My programs overview page for Moodle™ LMS
+# My programs overview block for Moodle™ LMS
 
 [![MDL Shield](https://img.shields.io/endpoint?url=https%3A%2F%2Fmdlshield.com%2Fapi%2Fbadge%2Fblock_muprogmyoverview)](https://mdlshield.com/plugins/block_muprogmyoverview) ![Moodle Plugin CI](https://github.com/mutms/moodle-block_muprogmyoverview/actions/workflows/moodle-ci.yml/badge.svg) [![camp](https://camp-registry.org/badge/block_muprogmyoverview.svg)](https://camp-registry.org/plugin/block_muprogmyoverview.html)
 
@@ -10,6 +10,8 @@ Provides a My programs overview block — a programs equivalent of the standard 
 
 * Dashboard
 * custom home pages provided by the [Custom home pages plugin](https://github.com/mutms/moodle-tool_muhome)
+
+The block is displayed only to users allocated to at least one program.
 
 Optionally a dedicated "My programs" page can be added to the main menu for all users
 allocated to programs, see the _Add "My programs" menu_ block setting. The setting is disabled

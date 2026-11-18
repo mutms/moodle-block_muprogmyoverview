@@ -28,6 +28,8 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['addprimarymenu'] = 'Añadir el menú «Mis programas»';
+$string['addprimarymenu_desc'] = 'Si se habilita, el elemento «Mis programas» se añadirá al menú principal para todos los usuarios asignados a programas. Si se deshabilita, la vista general de programas puede añadirse como bloque al tablero.';
 $string['addtofavourites'] = 'Destacar este programa';
 $string['all'] = 'Todos';
 $string['allincludinghidden'] = 'Todos (incluidos los quitados de la vista)';
@@ -73,10 +75,12 @@ $string['inprogress'] = 'En progreso';
 $string['layouts'] = 'Diseños disponibles';
 $string['layouts_help'] = 'Diseños de la vista general de Mis programas que están disponibles para que los usuarios los seleccionen. Si no se selecciona ninguno, se utilizará el diseño de tarjeta.';
 $string['list'] = 'Lista';
+$string['muprogmyoverview:addinstance'] = 'Añadir el bloque Vista general de Mis programas';
+$string['muprogmyoverview:myaddinstance'] = 'Añadir el bloque Vista general de Mis programas al tablero';
 $string['myprograms'] = 'Mis programas';
 $string['noprograms'] = 'No hay programas';
 $string['past'] = 'Pasados';
-$string['pluginname'] = 'Página de vista general de Mis programas';
+$string['pluginname'] = 'Vista general de Mis programas';
 $string['privacy:metadata:overviewgroupingpreference'] = 'La preferencia de agrupación de la página de vista general de Mis programas.';
 $string['privacy:metadata:overviewpagingpreference'] = 'La preferencia de paginación de la página de vista general de Mis programas.';
 $string['privacy:metadata:overviewsortpreference'] = 'La preferencia de ordenación de la página de vista general de Mis programas.';

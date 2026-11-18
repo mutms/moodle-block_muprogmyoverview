@@ -153,12 +153,23 @@ final class block_muprogmyoverview_test extends \advanced_testcase {
     public function test_get_content(): void {
         $this->resetAfterTest(true);
 
-        $user = $this->getDataGenerator()->create_user();
+        /** @var \tool_muprog_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_muprog');
+
+        $program1 = $generator->create_program();
+        $user0 = $this->getDataGenerator()->create_user();
+        $user1 = $this->getDataGenerator()->create_user();
+        $generator->create_program_allocation(['userid' => $user1->id, 'programid' => $program1->id]);
 
         $page = new \moodle_page();
         $page->set_context(\context_system::instance());
         $page->set_pagetype('tool-muhome-index');
         $page->set_url('/admin/tool/muhome/');
+
+        $dedicatedpage = new \moodle_page();
+        $dedicatedpage->set_context(\context_system::instance());
+        $dedicatedpage->set_pagetype('block-muprogmyoverview-index');
+        $dedicatedpage->set_url('/blocks/muprogmyoverview/');
 
         $this->setUser(null);
         $block = block_instance('muprogmyoverview');
@@ -170,7 +181,22 @@ final class block_muprogmyoverview_test extends \advanced_testcase {
         $block->page = $page;
         $this->assertNull($block->get_content());
 
-        $this->setUser($user);
+        $this->setUser($user0);
+        $block = block_instance('muprogmyoverview');
+        $block->page = $page;
+        $content = $block->get_content();
+        $this->assertInstanceOf(\stdClass::class, $content);
+        $this->assertSame('', $content->text);
+        $this->assertSame('', $content->footer);
+
+        $block = block_instance('muprogmyoverview');
+        $block->page = $dedicatedpage;
+        $content = $block->get_content();
+        $this->assertInstanceOf(\stdClass::class, $content);
+        $this->assertStringContainsString('data-region="muprogmyoverview"', $content->text);
+        $this->assertSame('', $content->footer);
+
+        $this->setUser($user1);
         $block = block_instance('muprogmyoverview');
         $block->page = $page;
         $content = $block->get_content();

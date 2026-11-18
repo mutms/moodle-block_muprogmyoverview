@@ -53,6 +53,16 @@ class block_muprogmyoverview extends block_base {
             return $this->content;
         }
 
+        if (
+            $this->page->pagetype !== 'block-muprogmyoverview-index'
+            && !\block_muprogmyoverview\local\util::count_active_programs()
+        ) {
+            $this->content = new stdClass();
+            $this->content->text = '';
+            $this->content->footer = '';
+            return $this->content;
+        }
+
         $group = get_user_preferences('block_muprogmyoverview_user_grouping_preference');
         $sort = get_user_preferences('block_muprogmyoverview_user_sort_preference');
         $view = get_user_preferences('block_muprogmyoverview_user_view_preference');
