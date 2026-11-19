@@ -36,4 +36,5 @@ $plugin->release = 'v5.3.1.00';
 
 $plugin->dependencies = [
     'tool_mulib' => 2026111753,
+    'tool_muprog' => 2026111753,
 ];
