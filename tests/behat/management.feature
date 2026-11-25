@@ -30,6 +30,6 @@ Feature: Program overview block allows viewer to access Program managment
     And I click on "My programs" "link" in the ".primary-navigation" "css_element"
 
     When I click on "Program management" action from "Actions" dropdown
-    Then the following should exist in the "reportbuilder-table" table:
+    Then the following should exist in the mureport:
       | Program name | Program ID | Category |
       | Program 000  | PR0        | System   |
